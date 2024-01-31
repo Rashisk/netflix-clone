@@ -10,43 +10,49 @@ import { changeLanguage } from "../utils/configSlice";
 // rafce full form - React Arrow Function Component Export
 
 const Header = () => {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const showGptSearch = useSelector((store) => store.gpt.showGptSearch);
+  const navigate = useNavigate();
   const user = useSelector((store) => store.user);
+  const showGptSearch = useSelector((store) => store.gpt.showGptSearch);
+  const handleSignOut = () => {
+    signOut(auth)
+      .then(() => {})
+      .catch((error) => {
+        navigate("/error");
+      });
+  };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const { uid, email, displayName, photoURL } = user;
+        dispatch(
+          addUser({
+            uid: uid,
+            email: email,
+            displayName: displayName,
+            photoURL: photoURL,
+          })
+        );
+        navigate("/browse");
+      } else {
+        dispatch(removeUser());
+        navigate("/");
+      }
+    });
+
+    // Unsiubscribe when component unmounts
+    return () => unsubscribe();
+  }, []);
+
   const handleGptSearchClick = () => {
+    // Toggle GPT Search
     dispatch(toggleGptSearchView());
   };
+
   const handleLanguageChange = (e) => {
     dispatch(changeLanguage(e.target.value));
   };
-  const handleSignOut = () => {
-    signOut(auth)
-      .then(() => {
-        // Sign-out successful.
-        navigate("/");
-      })
-      .catch((error) => {
-        // An error happened.
-      });
-  };
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/auth.user
-        const { uid, email, displayName } = user;
-        // After getting the information, we'll dispatch the action to add user
-        dispatch(addUser({ uid: uid, email: email, displayName: displayName }));
-        // ...
-      } else {
-        // User is signed out
-        // Dispatch an action to remove user
-        dispatch(removeUser());
-        // ...
-      }
-    });
-  }, []);
   return (
     <div className="flex flex-col absolute w-screen px-8 py-2 bg-gradient-to-b from-black z-10 md:flex-row justify-between">
       <img className="w-44 mx-auto md:mx-0" src={LOGO} alt="logo" />
@@ -98,3 +104,4 @@ const Header = () => {
 };
 
 export default Header;
+
