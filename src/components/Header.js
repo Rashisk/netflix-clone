@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../utils/firebase";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser, removeUser } from "../utils/userSlice";
 import { LOGO, SUPPORTED_LANGUAGES, USER_AVATAR } from "../utils/constants";
@@ -10,6 +10,7 @@ import { changeLanguage } from "../utils/configSlice";
 // rafce full form - React Arrow Function Component Export
 
 const Header = () => {
+  let location = useLocation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = useSelector((store) => store.user);
@@ -23,6 +24,7 @@ const Header = () => {
   };
 
   useEffect(() => {
+    console.log(location.pathname);
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         const { uid, email, displayName, photoURL } = user;
@@ -34,8 +36,11 @@ const Header = () => {
             photoURL: photoURL,
           })
         );
-        navigate("/browse");
-      } else {
+        if (location.pathname === '/') {
+          navigate("/browse");
+        }
+      }
+      else if (location.pathname !== "/" && !user) {
         dispatch(removeUser());
         navigate("/");
       }
@@ -48,6 +53,7 @@ const Header = () => {
   const handleGptSearchClick = () => {
     // Toggle GPT Search
     dispatch(toggleGptSearchView());
+    navigate("/browse");
   };
 
   const handleLanguageChange = (e) => {

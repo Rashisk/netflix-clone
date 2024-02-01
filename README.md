@@ -123,8 +123,25 @@ Build Movie Card
 
 
 - Make the app multilingal(At least in Hindi);
+
 - Make display page on clicking a card 
+
 - Add streaming
+Implement standard video playback features like play, pause, rewind, and fast forward.
+Include volume controls and subtitle options.
+
+- Continue Watching:
+
+Save the user's progress in a movie or TV show for easy resume.
+
+- Social Integration:
+
+Allow users to share their favorite content on social media.
+Incorporate social logins and user reviews.
+
+- User Feedback:
+
+Include a feedback mechanism for users to report issues and provide suggestions.
 
 # A Big Learning - Reusability of components
 

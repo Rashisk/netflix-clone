@@ -24,7 +24,6 @@ const GptSearchBar = () => {
 const handleSearch = async () => {
   const movieData = movieList.map((movie) => searchMovieTMDB(movie));
   const tmdbResults = await Promise.all(movieData);
-  console.log(tmdbResults);
   dispatch(
     addGptMovieResults({ movieNames: movieList, movieResults: tmdbResults })
   );
@@ -32,7 +31,7 @@ const handleSearch = async () => {
 
 
   return (
-    <div className="pt-[35%] md:pt-[10%] flex justify-center">
+    <div className="pt-[35%] md:pt-[20%] flex justify-center">
       <form
         className=" w-3/4 bg-black grid grid-cols-6"
         onSubmit={(e) => e.preventDefault()}
