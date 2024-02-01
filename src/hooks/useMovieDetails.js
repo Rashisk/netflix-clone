@@ -1,15 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { API_OPTIONS } from "../utils/constants";
-import { useDispatch, useSelector } from "react-redux";
-import { addMovieDetails } from "../utils/moviesSlice";
+import { useDispatch } from "react-redux";
+import { addMovieImage, addMovieMetaData } from "../utils/moviesSlice";
+import { useParams } from "react-router-dom";
 // Hooks are normal Javascript functions
 
 // We can create custom hooks as well along with some built in hooks like useState, useEffect etc.
 
-const useMovieDetails = (movieId) => {
+const useMovieDetails = () => {
+  const { movieId } = useParams();
   const dispatch = useDispatch();
-
-  const movieDetails = useSelector(store => store.movies.movieDetails);
+console.log(movieId + "  from usefile");
+const getMovieDescription = async () => {
+const data = await fetch(
+`https://api.themoviedb.org/3/movie/${movieId}`, API_OPTIONS
+);
+const json = await data.json();
+dispatch(addMovieMetaData(json));
+console.log(json);
+}
   const getMovieImage = async () => {
     const data = await fetch(
       `https://api.themoviedb.org/3/movie/${movieId}/images`,
@@ -19,10 +28,10 @@ const useMovieDetails = (movieId) => {
  //   const filterMovieImage = json.backdrops.f
 console.log(json.backdrops.length);
 if(json.backdrops.length !== 0){
-   dispatch(addMovieDetails(json.backdrops));
+   dispatch(addMovieImage(json.backdrops));
 }
 else{
-  dispatch(addMovieDetails(json.posters));
+  dispatch(addMovieImage(json.posters));
 }
     // setMovieImage(movieImage);
     console.log(json.backdrops);
@@ -35,13 +44,14 @@ else{
     // To check if any uncertainity occurs in the app
     // in production mode - it will be called only once
     */
-    if(!movieDetails) getMovieImage();
+    getMovieImage();
+    getMovieDescription();
+    // here, we cannot use memoization because we have to 
+    // make an api call everytime the moive id is changed
     // once you get the list , you need to add the movies in the store - so you dispatch the action and call an add method
-  }, []);
+  }, [movieId]);
 
-  return{
-    movieDetails,
-  }
+  
 };
 
 export default useMovieDetails;
